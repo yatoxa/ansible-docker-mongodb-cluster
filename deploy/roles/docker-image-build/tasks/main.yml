@@ -1,0 +1,39 @@
+- name: remove previous temp directory for build if exists
+  file:
+    path: /tmp/{{ image_name }}_{{ image_tag }}
+    state: absent
+
+- name: make temp directory for build
+  file:
+    path: /tmp/{{ image_name }}_{{ image_tag }}
+    state: directory
+    mode: 0700
+
+- name: copy templates to build server
+  template:
+    src: '{{ item }}'
+    dest: /tmp/{{ image_name }}_{{ image_tag }}/{{ item | basename | regex_replace('\.deploy.j2', '') }}
+    mode: 0600
+  with_fileglob:
+    - ../templates/{{ image_name }}/*.deploy.j2
+
+- name: copy src/ content if exists to build root
+  copy:
+    src: ../templates/{{ image_name }}/src/
+    dest: /tmp/{{ image_name }}_{{ image_tag }}/src/
+    mode: 0600
+  failed_when: false
+
+- name: build new version of docker image and push them to repository
+  docker_image:
+    path: /tmp/{{ image_name }}_{{ image_tag }}
+    name: '{{ image_name }}'
+    tag: '{{ image_tag }}'
+    repository: '{{ registry_host }}:{{ registry_port }}/{{ registry_dir }}'
+    push: yes
+    force: yes
+
+- name: delete build directory
+  file:
+    path: /tmp/{{ image_name }}_{{ image_tag }}
+    state: absent

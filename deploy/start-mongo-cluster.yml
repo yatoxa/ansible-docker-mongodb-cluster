@@ -1,0 +1,65 @@
+- include: container-change-state.yml
+    group_name=mongo_conf
+    container_name='mongo_conf_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_state=started
+# ------------------------------------------------------------------------------
+
+- include: container-change-state.yml
+    group_name=mongo_router
+    container_name='mongo_router_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_state=started
+# ------------------------------------------------------------------------------
+
+- include: mongo-shard-replica-change-state.yml
+    image_tag='{{ mongo_tag }}'
+    container_state=started
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_conf[0]
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: initiate configuration servers replica set
+      shell: "docker exec mongo_conf_{{ mongo_tag }}_{{ groups['mongo_conf'][0] }} \
+        mongo --port 27019 --eval \
+        'rs.initiate({_id : \"{{ mongo_conf_replica_set_name }}\", members : [ \
+          {% for host_item in groups['mongo_conf'] %}
+            { _id : {{ loop.index }}, host : \"{{ host_item }}:{{ mongo_conf_port }}\" }, \
+          {% endfor %}
+        ] })'"
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_shard[0]
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: initiate shard replica set
+      shell: "docker exec mongo_shard_{{ item }}_{{ mongo_tag }}_{{ groups['mongo_shard'][0] }} \
+        mongo --port 27018 --eval \
+        'rs.initiate({_id : \"{{ item }}\", members : [ \
+          {% for host_item in groups['mongo_shard'] %}
+            { _id : {{ loop.index }}, host : \"{{ host_item }}:{{ item }}\" }, \
+          {% endfor %}
+        ] })'"
+      with_items: '{{ mongo_shard_ports[:mongo_cluster_shards_count] }}'
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_router[0]
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: add shards to mongo cluster
+      shell: "docker exec mongo_router_{{ mongo_tag }}_{{ groups['mongo_router'][0] }} \
+        mongo --port 27017 --eval \
+        'sh.addShard(\"{{ item }}/{{ inventory_hostname }}:{{ item }}\")'"
+      with_items: '{{ mongo_shard_ports[:mongo_cluster_shards_count] }}'
+# ------------------------------------------------------------------------------

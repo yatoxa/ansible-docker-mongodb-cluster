@@ -1,0 +1,3 @@
+sharding:
+    configDB: mccrs/{{ groups['mongo_conf'] | join(':%s,' % mongo_conf_port) }}:{{ mongo_conf_port }}
+    

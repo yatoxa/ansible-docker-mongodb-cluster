@@ -1,0 +1,6 @@
+- name: delete images from registry
+  uri:
+    url: 'http://{{ registry_host }}/v2/{{ item["name"] }}/blobs/{{ item["digest"] }}'
+    method: DELETE
+    status_code: 202
+  with_items: '{{ images_to_delete }}'

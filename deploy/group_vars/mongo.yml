@@ -1,0 +1,31 @@
+mongo_image: '{{ registry_host }}:{{ registry_port }}/{{ mongo_registry_dir }}'
+
+mongo_ports:
+#  - '{{ mongo_port }}:{{ mongo_port }}'
+
+mongo_volumes:
+  - /etc/hosts:/etc/hosts
+
+mongo_env:
+
+#-------------------------------------------------------------------------------
+
+mongo_conf_volumes:
+#mongo_conf_ports:
+mongo_conf_env:
+#-------------------------------------------------------------------------------
+
+mongo_router_volumes:
+#mongo_router_ports:
+mongo_router_env:
+#-------------------------------------------------------------------------------
+
+mongo_shard_replica_volumes:
+#mongo_conf_ports:
+mongo_shard_replica_env:
+#-------------------------------------------------------------------------------
+
+mongo_cluster_shards_count: 3
+mongo_shard_replicas_count: 3
+mongo_conf_replicas_count: 3
+#-------------------------------------------------------------------------------

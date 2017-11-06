@@ -1,0 +1,7 @@
+- name: remove some hosts from known_hosts
+  shell: 'ssh-keygen -R {{ item }}'
+  with_items: '{{ groups.all }}'
+
+- name: add some hosts to known_hosts
+  shell: 'ssh-keyscan -H {{ item }} | grep ssh-rsa >> ~/.ssh/known_hosts'
+  with_items: '{{ groups.all }}'

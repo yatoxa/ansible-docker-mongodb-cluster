@@ -1,0 +1,15 @@
+- hosts: ci
+  gather_facts: no
+  become: yes
+
+  vars:
+    image_name: '{{ mongo_registry_dir }}'
+    image_tag: '{{ mongo_tag }}'
+    registry_dir: '{{ mongo_registry_dir }}'
+
+  vars_files:
+    - group_vars/mongo.yml
+
+  roles:
+    - ping
+    - docker-image-build

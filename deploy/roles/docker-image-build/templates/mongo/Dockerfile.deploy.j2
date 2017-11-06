@@ -1,0 +1,6 @@
+FROM mongo:3.4
+
+COPY mongoc.conf /etc/mongoc.conf
+COPY mongos.conf /etc/mongos.conf
+
+RUN chmod 0644 /etc/mongo*.conf

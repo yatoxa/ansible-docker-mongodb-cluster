@@ -1,0 +1,63 @@
+- hosts: '{{ group_name }}'
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - ping:
+
+#    - name: enable centos extras repository
+
+#    - name: uninstall old docker versions
+#      with_items:
+#        - docker
+#        - docker-common
+#        - docker-selinux
+#        - docker-engine
+
+    - name: install EPEL repository
+      yum:
+        name: '{{ item }}'
+        state: installed
+        enablerepo: extras
+        update_cache: yes
+      with_items:
+        - epel-release
+
+    - name: install required packages
+      yum:
+        name: '{{ item }}'
+        state: installed
+        enablerepo: extras
+        update_cache: yes
+      with_items:
+        - yum-utils
+        - device-mapper-persistent-data
+        - lvm2
+        - python2-pip
+
+    - name: install docker-py
+      pip:
+        name: docker-py
+        state: latest
+
+    - name: add specified docker repository
+      shell: yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+    - name: install recommended packages and docker-ce
+      yum:
+        name: '{{ item }}'
+        state: latest
+      with_items:
+        - docker-ce
+
+    - name: restart docker service
+      service:
+        name: docker
+        state: restarted
+        enabled: yes
+
+    - name: put ansible_user to docker group
+      user:
+        name: '{{ ansible_user }}'
+        groups: docker
+        append: yes

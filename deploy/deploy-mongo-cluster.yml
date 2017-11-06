@@ -1,0 +1,61 @@
+- hosts: mongo_conf # with config
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: present mongod (configuration server) docker container
+      docker_container:
+        name: 'mongo_conf_{{ mongo_tag }}_{{ inventory_hostname }}'
+        image: '{{ mongo_image }}:{{ mongo_tag }}'
+        state: present
+        volumes: '{{ mongo_conf_volumes }}'
+        ports: '{{ mongo_conf_port }}:{{ mongo_conf_port }}'
+        restart_policy: on-failure
+        restart_retries: 5
+        env: '{{ mongo_conf_env }}'
+        command: mongod --config /etc/mongoc.conf
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_router # with config
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: present mongos (router) docker container
+      docker_container:
+        name: 'mongo_router_{{ mongo_tag }}_{{ inventory_hostname }}'
+        image: '{{ mongo_image }}:{{ mongo_tag }}'
+        state: present
+        volumes: '{{ mongo_router_volumes }}'
+        ports: '{{ mongo_router_port }}:{{ mongo_router_port }}'
+        restart_policy: on-failure
+        restart_retries: 5
+        env: '{{ mongo_router_env }}'
+        command: mongos --config /etc/mongos.conf
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_shard
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: present mongod (shards replicas) docker container
+      docker_container:
+        name: 'mongo_shard_{{ item }}_{{ mongo_tag }}_{{ inventory_hostname }}'
+        image: '{{ mongo_image }}:{{ mongo_tag }}'
+        state: present
+        volumes: '{{ mongo_shard_replica_volumes }}'
+        ports:
+          - '{{ item }}:{{ mongo_replica_port }}'
+        restart_policy: on-failure
+        restart_retries: 5
+        env: '{{ mongo_shard_replica_env }}'
+        command: 'mongod --shardsvr --replSet {{ item }}'
+      with_items: '{{ mongo_shard_ports[:mongo_cluster_shards_count] }}'
+# ------------------------------------------------------------------------------

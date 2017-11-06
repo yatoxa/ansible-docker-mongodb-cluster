@@ -1,0 +1,6 @@
+- hosts: '{{ group_name }}'
+  gather_facts: no
+  become: yes
+
+  roles:
+    - docker-container-change-state

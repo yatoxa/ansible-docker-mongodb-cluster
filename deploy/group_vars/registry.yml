@@ -1,0 +1,11 @@
+registry_image: registry
+
+registry_ports:
+  - '{{ registry_port }}:{{ registry_port }}'
+
+registry_volumes:
+  - /var/lib/registry:/var/lib/registry
+  - /etc/hosts:/etc/hosts
+
+registry_env:
+  REGISTRY_STORAGE_DELETE_ENABLED: True

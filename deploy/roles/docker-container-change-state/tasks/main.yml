@@ -1,0 +1,4 @@
+- name: change state for docker container
+  docker_container:
+    name: '{{ container_name }}'
+    state: '{{ container_state }}'

@@ -1,0 +1,17 @@
+- hosts: registry
+  gather_facts: yes
+  become: yes
+
+  tasks:
+    - ping:
+
+    - name: deploy docker registry
+      docker_container:
+        name: '{{ registry_image }}_{{ registry_tag }}'
+        image: '{{ registry_image }}:{{ registry_tag }}'
+        state: present
+        ports: '{{ registry_ports }}'
+        volumes: '{{ registry_volumes }}'
+        restart_policy: on-failure
+        restart_retries: 5
+        env: '{{ registry_env }}'

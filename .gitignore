@@ -1,0 +1,6 @@
+.vagrant
+.idea
+*.log
+*.pyc
+*.pyw
+*.retry

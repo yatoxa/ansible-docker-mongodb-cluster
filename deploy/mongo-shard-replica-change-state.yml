@@ -1,0 +1,10 @@
+- hosts: mongo_shard
+  gather_facts: no
+  become: yes
+
+  tasks:
+    - name: change state for mongod (shard replica) docker container
+      docker_container:
+        name: 'mongo_shard_{{ item }}_{{ mongo_tag }}_{{ inventory_hostname }}'
+        state: '{{ container_state }}'
+      with_items: '{{ mongo_shard_ports[:mongo_cluster_shards_count] }}'

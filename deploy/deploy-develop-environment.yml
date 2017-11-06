@@ -1,0 +1,32 @@
+- hosts: localhost
+  gather_facts: no
+  become: no
+
+  roles:
+    - put-inventory-hosts-to-known-hosts
+
+- include: deploy-docker-engine-centos.yml
+    group_name=develop
+
+- include: deploy-docker-registry.yml
+- include: container-change-state.yml
+    group_name=registry
+    container_name='{{ registry_image }}_{{ registry_tag }}'
+    container_state=started
+
+- hosts: develop
+  gather_facts: no
+  become: yes
+
+  roles:
+    - ping
+    - allow-docker-to-use-insecure-registry
+
+- include: build-mongo.yml
+
+- include: deploy-mongo.yml
+
+- include: container-change-state.yml
+    group_name=mongo
+    container_name='mongo_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_state=started

@@ -1,0 +1,14 @@
+- name: configure docker daemon to use insecure registry
+  lineinfile:
+    dest: /etc/docker/daemon.json
+    create: yes
+    line: ' { "insecure-registries": ["{{ registry_host }}:{{ registry_port }}"] }'
+    owner: root
+    group: root
+    mode: 0600
+
+- name: restart docker service
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
