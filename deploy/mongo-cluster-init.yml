@@ -1,20 +1,3 @@
-- include: container-change-state.yml
-    group_name=mongo_conf
-    container_name='mongo_conf_{{ mongo_tag }}_{{ inventory_hostname }}'
-    container_state=started
-# ------------------------------------------------------------------------------
-
-- include: container-change-state.yml
-    group_name=mongo_router
-    container_name='mongo_router_{{ mongo_tag }}_{{ inventory_hostname }}'
-    container_state=started
-# ------------------------------------------------------------------------------
-
-- include: mongo-shard-replica-change-state.yml
-    image_tag='{{ mongo_tag }}'
-    container_state=started
-# ------------------------------------------------------------------------------
-
 - hosts: mongo_conf[0]
   gather_facts: no
   become: yes
@@ -56,6 +39,11 @@
 
   tasks:
     - ping:
+
+    - wait_for:
+        host: '{{ inventory_hostname }}'
+        port: '{{ mongo_router_port }}'
+        delay: 3
 
     - name: add shards to mongo cluster
       shell: "docker exec mongo_router_{{ mongo_tag }}_{{ groups['mongo_router'][0] }} \

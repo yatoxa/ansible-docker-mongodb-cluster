@@ -5,9 +5,10 @@
   tasks:
     - ping:
 
-#    - name: enable centos extras repository
-
 #    - name: uninstall old docker versions
+#      yum:
+#        name: '{{ item }}'
+#        state: absent
 #      with_items:
 #        - docker
 #        - docker-common
