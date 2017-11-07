@@ -2,15 +2,33 @@ registry_tag: 2
 registry_host: '{{ groups["registry"][0] }}'
 registry_port: 5000
 registry_cph: 1
+# ------------------------------------------------------------------------------
 
 mongo_tag: v1
 mongo_tag_prev: v0
 mongo_registry_dir: mongo
+
+mongo_conf_volumes:
+mongo_conf_env:
+
+mongo_router_volumes:
+mongo_router_env:
+
+mongo_shard_replica_volumes:
+mongo_shard_replica_env:
+
 mongo_conf_replica_set_name: mccrs
+
+mongo_cluster_shards_count: 3
+mongo_shard_replicas_count: 3
+mongo_conf_replicas_count: 3
+
 mongo_conf_port: 27019
 mongo_router_port: 27017
 mongo_replica_port: 27018
+
 mongo_shard_ports:
   - 27020
   - 27021
   - 27022
+# ------------------------------------------------------------------------------

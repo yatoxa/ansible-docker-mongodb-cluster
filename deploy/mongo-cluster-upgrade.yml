@@ -3,7 +3,7 @@
   become: yes
 
   vars:
-    container_name: 'mongo_router_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_name: 'mongo_router_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
     container_state: stopped
 
   roles:
@@ -16,7 +16,7 @@
   become: yes
 
   vars:
-    container_name: 'mongo_conf_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_name: 'mongo_conf_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
     container_state: stopped
 
   roles:
@@ -29,10 +29,13 @@
   become: yes
 
   vars:
-    container_tag: '{{ mongo_tag }}'
+    container_tag: '{{ mongo_tag_prev }}'
     container_state: stopped
 
   roles:
     - ping
     - mongo-shard-replica-change-state
+# ------------------------------------------------------------------------------
+
+- include: mongo-cluster-start.yml
 # ------------------------------------------------------------------------------

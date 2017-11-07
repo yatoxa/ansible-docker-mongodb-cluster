@@ -1,9 +1,12 @@
+- include: mongo-cluster-stop.yml
+# ------------------------------------------------------------------------------
+
 - hosts: mongo_shard
   gather_facts: no
   become: yes
 
   vars:
-    container_tag: '{{ mongo_tag }}'
+    container_tag: '{{ mongo_tag_prev }}'
     container_state: started
 
   roles:
@@ -16,7 +19,7 @@
   become: yes
 
   vars:
-    container_name: 'mongo_conf_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_name: 'mongo_conf_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
     container_state: started
 
   roles:
@@ -29,7 +32,7 @@
   become: yes
 
   vars:
-    container_name: 'mongo_router_{{ mongo_tag }}_{{ inventory_hostname }}'
+    container_name: 'mongo_router_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
     container_state: started
 
   roles:

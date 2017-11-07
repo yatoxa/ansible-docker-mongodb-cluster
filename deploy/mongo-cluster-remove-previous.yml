@@ -1,0 +1,77 @@
+- hosts: mongo_router
+  gather_facts: no
+  become: yes
+
+  vars:
+    container_name: 'mongo_router_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
+    container_state: absent
+
+  roles:
+    - ping
+    - docker-container-change-state
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_conf
+  gather_facts: no
+  become: yes
+
+  vars:
+    container_name: 'mongo_conf_{{ mongo_tag_prev }}_{{ inventory_hostname }}'
+    container_state: absent
+
+  roles:
+    - ping
+    - docker-container-change-state
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_shard
+  gather_facts: no
+  become: yes
+
+  vars:
+    container_tag: '{{ mongo_tag_prev }}'
+    container_state: absent
+
+  roles:
+    - ping
+    - mongo-shard-replica-change-state
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_router
+  gather_facts: no
+  become: yes
+
+  vars:
+    image_name: '{{ mongo_image }}'
+    image_tag: '{{ mongo_tag_prev }}'
+
+  roles:
+    - ping
+    - docker-image-remove
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_conf
+  gather_facts: no
+  become: yes
+
+  vars:
+    image_name: '{{ mongo_image }}'
+    image_tag: '{{ mongo_tag_prev }}'
+
+  roles:
+    - ping
+    - docker-image-remove
+# ------------------------------------------------------------------------------
+
+- hosts: mongo_shard
+  gather_facts: no
+  become: yes
+
+  vars:
+    image_name: '{{ mongo_image }}'
+    image_tag: '{{ mongo_tag_prev }}'
+
+  roles:
+    - ping
+    - docker-image-remove
+# ------------------------------------------------------------------------------
