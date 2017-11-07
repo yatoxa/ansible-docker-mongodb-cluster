@@ -1,0 +1,10 @@
+- name: set new rules for iptables
+  template:
+    src: iptables.j2
+    dest: /etc/sysconfig/iptables
+
+- name: restart iptables to enable new rules
+  services:
+    name: iptables
+    state: restarted
+    enabled: yes

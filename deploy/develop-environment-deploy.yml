@@ -7,6 +7,9 @@
     - put-inventory-hosts-to-known-hosts
 # ------------------------------------------------------------------------------
 
+#- include: iptables-configure.yml
+# ------------------------------------------------------------------------------
+
 - include: docker-engine-centos-deploy.yml
     group_name=develop
 # ------------------------------------------------------------------------------
@@ -40,3 +43,4 @@
 - include: mongo-cluster-deploy.yml
 - include: mongo-cluster-start.yml
 - include: mongo-cluster-init.yml
+# ------------------------------------------------------------------------------

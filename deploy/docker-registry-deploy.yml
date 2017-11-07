@@ -1,5 +1,5 @@
 - hosts: registry
-  gather_facts: yes
+  gather_facts: no
   become: yes
 
   tasks:
@@ -10,7 +10,8 @@
         name: '{{ registry_image }}_{{ registry_tag }}'
         image: '{{ registry_image }}:{{ registry_tag }}'
         state: present
-        ports: '{{ registry_ports }}'
+        network_mode: host
+#        ports: '{{ registry_ports }}'
         volumes: '{{ registry_volumes }}'
         restart_policy: on-failure
         restart_retries: 5

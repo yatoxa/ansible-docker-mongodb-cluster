@@ -2,5 +2,9 @@ FROM mongo:3.4
 
 COPY mongoc.conf /etc/mongoc.conf
 COPY mongos.conf /etc/mongos.conf
-
 RUN chmod 0644 /etc/mongo*.conf
+
+#COPY secret /data/secret
+#RUN chown mongodb:mongodb /opt/mongodb/secret && chmod 0400 /opt/mongodb/secret
+
+COPY mongo_create_admin_user.js /opt/mongodb/init/mongo_create_admin_user.js
